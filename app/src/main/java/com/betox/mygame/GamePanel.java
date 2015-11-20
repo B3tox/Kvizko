@@ -1,6 +1,8 @@
 package com.betox.mygame;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -10,7 +12,10 @@ import android.view.SurfaceView;
  */
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
 
+    public static final float WIDTH=768;
+    public static final float HEIGHT=768;
     private GameLoop thread;
+    private Background bg;
 
     public GamePanel(Context context)
     {
@@ -50,6 +55,11 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public void surfaceCreated(SurfaceHolder holder)
     {
+        //create background
+        bg=new Background(BitmapFactory.decodeResource(getResources(), R.drawable.road));
+        bg.setVectorY(-5);
+
+
         //we can safely start the game loop
         thread.setRunning(true);
         thread.start();
@@ -64,6 +74,28 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
 
     public void update()
     {
+        bg.update();
+
+    }
+
+    @Override
+    public void draw(Canvas canvas){
+
+
+
+
+
+        final float scaleFactorX= (getWidth()/WIDTH);
+        final float scaleFactorY= (getHeight()/HEIGHT);
+
+        if(canvas!=null){
+            final int savedState=canvas.save();
+            canvas.scale(scaleFactorX, scaleFactorY);
+            bg.draw(canvas);
+            canvas.restoreToCount(savedState);
+        }
+
+
 
     }
 }

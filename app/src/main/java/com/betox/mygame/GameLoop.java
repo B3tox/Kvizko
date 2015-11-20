@@ -7,6 +7,7 @@ import android.view.SurfaceHolder;
 /**
  * Created by Betox on 19-Nov-15.
  */
+
 public class GameLoop extends Thread {
 
 

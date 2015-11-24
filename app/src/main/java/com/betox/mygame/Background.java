@@ -9,20 +9,15 @@ import android.graphics.Canvas;
 public class Background {
 
     private Bitmap image;
-    private int x, y, dx, dy;
+    private int x, y, dx;
 
     public Background(Bitmap res){
+
         image=res;
+        dx=GamePanel.MOVESPEED;
     }
 
-    public void setVectorX(int dx)
-    {
-        this.dx=dx;
-    }
 
-    public void setVectorY(int dy){
-        this.dy=dy;
-    }
 
     public void update()
     {
@@ -35,11 +30,13 @@ public class Background {
         */
 
 
-        //move background image up
-        y+=dy;
-        if(y<-GamePanel.HEIGHT){
+        //move background image down
+        y+=dx;
+
+        if(y>GamePanel.HEIGHT){
             y=0;
         }
+
 
     }
 
@@ -47,12 +44,16 @@ public class Background {
     {
 
         canvas.drawBitmap(image, x , y ,null);
-        if(y<0)
+
+
+        if(y>0)
         {
-            canvas.drawBitmap(image,x ,y+GamePanel.HEIGHT,null);
+            canvas.drawBitmap(image,x ,y-GamePanel.HEIGHT,null);
         }
 
     }
+
+
 
 
 }

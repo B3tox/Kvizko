@@ -1,6 +1,7 @@
 package com.betox.mygame;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
@@ -10,25 +11,30 @@ import android.view.SurfaceView;
 /**
  * Created by Betox on 19-Nov-15.
  */
+
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
 
-    public static final float WIDTH=768;
-    public static final float HEIGHT=768;
+
+    public static final int WIDTH = 768;
+    public static final int HEIGHT = 768;
+    public static int CanvasWidth;
+    public static int CanvasHeight;
+    public static final int MOVESPEED=5;
     private GameLoop thread;
     private Background bg;
+    private Player player;
 
     public GamePanel(Context context)
     {
         super(context);
 
 
-
-        //add callback to the surfaceHolder to intercapt events
+        //add the callback to the surfaceholder to intercept events
         getHolder().addCallback(this);
 
-        thread=new GameLoop(getHolder(), this);
+        thread = new GameLoop(getHolder(), this);
 
-        //make GamePanel focusable so it can handle events
+        //make gamePanel focusable so it can handle events
         setFocusable(true);
     }
 
@@ -36,66 +42,80 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height){}
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder)
-    {
-        boolean retry=true;
+    public void surfaceDestroyed(SurfaceHolder holder){
+        boolean retry = true;
         while(retry)
         {
-            try{
-                thread.setRunning(false);
+            try{thread.setRunning(false);
                 thread.join();
-            }catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
-            retry=false;
+
+            }catch(InterruptedException e){e.printStackTrace();}
+            retry = false;
         }
+
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder)
-    {
-        //create background
-        bg=new Background(BitmapFactory.decodeResource(getResources(), R.drawable.road));
-        bg.setVectorY(-5);
+    public void surfaceCreated(SurfaceHolder holder){
 
+        CanvasHeight=getHeight();
+        CanvasWidth=getWidth();
+
+        bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.road));
+        player=new Player(BitmapFactory.decodeResource(getResources(), R.drawable.car));
 
         //we can safely start the game loop
         thread.setRunning(true);
         thread.start();
 
     }
-
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
-        return super.onTouchEvent(event);
-    }
-
-    public void update()
-    {
-        bg.update();
-
-    }
-
-    @Override
-    public void draw(Canvas canvas){
 
 
-
-
-
-        final float scaleFactorX= (getWidth()/WIDTH);
-        final float scaleFactorY= (getHeight()/HEIGHT);
-
-        if(canvas!=null){
-            final int savedState=canvas.save();
-            canvas.scale(scaleFactorX, scaleFactorY);
-            bg.draw(canvas);
-            canvas.restoreToCount(savedState);
+        if(event.getAction()==MotionEvent.ACTION_DOWN){
+            float tempX=event.getX();
+            if(tempX>player.getX())
+                player.setX(player.getX()+25);
+            else
+                player.setX(player.getX()-25);
         }
 
 
 
+        return super.onTouchEvent(event);
     }
+    private int time=0;
+
+    public void update()
+    {
+
+        bg.update();
+
+        player.update();
+    }
+
+    @Override
+    public void draw(Canvas canvas)
+    {
+        time++;
+        if(time==100){
+            System.out.println("Score: "+player.getScore());
+            time=0;
+        }
+
+
+        final float scaleFactorX = (CanvasWidth/(WIDTH*1.0f));
+        final float scaleFactorY = (CanvasHeight/(HEIGHT*1.0f));
+        if(canvas!=null) {
+            final int savedState = canvas.save();
+            canvas.scale(scaleFactorX, scaleFactorY);
+            bg.draw(canvas);
+            canvas.restoreToCount(savedState);
+            player.draw(canvas);
+        }
+
+    }
+
 }

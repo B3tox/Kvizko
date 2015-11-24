@@ -40,7 +40,6 @@ public class GameLoop extends Thread {
             canvas = null;
 
             try {
-
                 canvas = this.surfaceHolder.lockCanvas();
                 synchronized (surfaceHolder) {
                     this.gamePanel.update();
@@ -74,6 +73,7 @@ public class GameLoop extends Thread {
                 frameCount=0;
                 totalTime=0;
                 Log.i(TAG, "Avg. FPS: "+avgFPS);
+
 
             }
         }

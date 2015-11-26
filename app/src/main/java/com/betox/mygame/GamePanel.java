@@ -14,15 +14,20 @@ import android.view.SurfaceView;
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
 
-
+    //background image size
     public static final int WIDTH = 768;
     public static final int HEIGHT = 768;
+
+
     public static int CanvasWidth;
     public static int CanvasHeight;
     public static final int MOVESPEED=5;
     private GameLoop thread;
     private Background bg;
     private Player player;
+    private Blokade blokade1, blokade2, blokade3;
+    private int time=0;
+
 
     public GamePanel(Context context)
     {
@@ -44,15 +49,15 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public void surfaceDestroyed(SurfaceHolder holder){
         boolean retry = true;
-        while(retry)
+        int counter=0;
+        while(retry && counter<1000)
         {
+            counter++;
             try{thread.setRunning(false);
                 thread.join();
-
+                retry = false;
             }catch(InterruptedException e){e.printStackTrace();}
-            retry = false;
         }
-
     }
 
     @Override
@@ -61,8 +66,18 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
         CanvasHeight=getHeight();
         CanvasWidth=getWidth();
 
+        //create background
         bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.road));
+
+
+
+        //create game objects
         player=new Player(BitmapFactory.decodeResource(getResources(), R.drawable.car));
+
+        //create 3 blokades: 1 for each row
+        blokade1=new Blokade(BitmapFactory.decodeResource(getResources(), R.drawable.blokade), 1);
+        blokade2=new Blokade(BitmapFactory.decodeResource(getResources(), R.drawable.blokade), 2);
+        blokade3=new Blokade(BitmapFactory.decodeResource(getResources(), R.drawable.blokade), 3);
 
         //we can safely start the game loop
         thread.setRunning(true);
@@ -72,8 +87,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
-
-
         if(event.getAction()==MotionEvent.ACTION_DOWN){
             float tempX=event.getX();
             if(tempX>player.getX())
@@ -83,22 +96,24 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
         }
 
 
-
         return super.onTouchEvent(event);
     }
-    private int time=0;
+
+
 
     public void update()
     {
-
         bg.update();
-
         player.update();
+        blokade1.update();
+        blokade2.update();
+        blokade3.update();
     }
 
     @Override
     public void draw(Canvas canvas)
     {
+        //print score every 100 frames
         time++;
         if(time==100){
             System.out.println("Score: "+player.getScore());
@@ -114,6 +129,20 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
             bg.draw(canvas);
             canvas.restoreToCount(savedState);
             player.draw(canvas);
+
+
+            /*
+            if(blokade1.getY()>CanvasHeight)
+            {
+                System.out.println("Outttttttttttttttttttttttt");
+            }else{
+                System.out.println(blokade1.getY()+" "+CanvasHeight);
+                blokade1.draw(canvas);
+            }
+            */
+            blokade1.draw(canvas);
+            blokade2.draw(canvas);
+            blokade3.draw(canvas);
         }
 
     }

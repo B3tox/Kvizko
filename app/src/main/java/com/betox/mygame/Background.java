@@ -12,8 +12,8 @@ public class Background {
     private int x, y, dx;
 
     public Background(Bitmap res){
-
         image=res;
+        //sped for moving background image
         dx=GamePanel.MOVESPEED;
     }
 
@@ -21,39 +21,22 @@ public class Background {
 
     public void update()
     {
-        /*
-        //move background image right
-        x+=dx;
-        if(x<-GamePanel.WIDTH){
-            x=0;
-        }
-        */
-
-
         //move background image down
         y+=dx;
-
         if(y>GamePanel.HEIGHT){
             y=0;
         }
-
-
     }
 
     public void draw(Canvas canvas)
     {
-
+        //draw first background immage
         canvas.drawBitmap(image, x , y ,null);
-
-
         if(y>0)
         {
+            //draw second background image
             canvas.drawBitmap(image,x ,y-GamePanel.HEIGHT,null);
         }
 
     }
-
-
-
-
 }

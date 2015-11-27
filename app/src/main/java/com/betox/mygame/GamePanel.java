@@ -4,9 +4,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import java.util.ArrayList;
 
 /**
  * Created by Betox on 19-Nov-15.
@@ -27,6 +30,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     private Player player;
     private Blokade blokade1, blokade2, blokade3;
     private int time=0;
+    private ArrayList<GameObject> items;
+    int lives;
 
 
     public GamePanel(Context context)
@@ -63,13 +68,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public void surfaceCreated(SurfaceHolder holder){
 
+        lives=3;
+        items=new ArrayList<GameObject>();
+
         CanvasHeight=getHeight();
         CanvasWidth=getWidth();
 
         //create background
         bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.road));
-
-
 
         //create game objects
         player=new Player(BitmapFactory.decodeResource(getResources(), R.drawable.car));
@@ -78,6 +84,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
         blokade1=new Blokade(BitmapFactory.decodeResource(getResources(), R.drawable.blokade), 1);
         blokade2=new Blokade(BitmapFactory.decodeResource(getResources(), R.drawable.blokade), 2);
         blokade3=new Blokade(BitmapFactory.decodeResource(getResources(), R.drawable.blokade), 3);
+
+        //add object to array for collision detection
+        items.add(player);
+        items.add(blokade1);
+        items.add(blokade2);
+        items.add(blokade3);
 
         //we can safely start the game loop
         thread.setRunning(true);
@@ -128,9 +140,31 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
             canvas.scale(scaleFactorX, scaleFactorY);
             bg.draw(canvas);
             canvas.restoreToCount(savedState);
+
             player.draw(canvas);
 
 
+            //blokade1.draw(canvas);
+            blokade2.draw(canvas);
+            //blokade3.draw(canvas);
+
+            //collision
+            for (GameObject item:items){
+                if(item !=player){
+                    if(player.getRectangle().intersect(item.getRectangle())){
+
+                        //Insert code HERE
+
+
+                        System.out.println("Hit");
+                    }else{}
+
+                }
+            }
+
+
+            //blokade reach end of bottom screen
+            //we dont need to draw it
             /*
             if(blokade1.getY()>CanvasHeight)
             {
@@ -140,9 +174,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
                 blokade1.draw(canvas);
             }
             */
-            blokade1.draw(canvas);
-            blokade2.draw(canvas);
-            blokade3.draw(canvas);
+
+
+
         }
 
     }

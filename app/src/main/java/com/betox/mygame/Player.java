@@ -2,6 +2,8 @@ package com.betox.mygame;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Rect;
+
 import com.betox.mygame.Animation;
 
 /**
@@ -15,6 +17,7 @@ public class Player extends GameObject{
     private Animation animation;
     private long startTime;
 
+
     //Width and height of image
     private static final int WIDTHPlayer = 810;
     private static final int HEIGHTPlayer = 1440;
@@ -22,6 +25,7 @@ public class Player extends GameObject{
 
     public Player(Bitmap res){
         spritesheet=res;
+
         dy=0;
         score=0;
 
@@ -31,11 +35,18 @@ public class Player extends GameObject{
         int tempX=(int)(90*scaleFactorX);
         int tempY=(int)(160*scaleFactorY);
 
+        width=tempX;
+        height=tempY;
 
-            //landscape mode
-            x=(GamePanel.CanvasWidth/2)-(tempY/2);
-            y=GamePanel.CanvasHeight-100;
-            spritesheet=Bitmap.createScaledBitmap(spritesheet, tempY, tempX, false);
+        //landscape mode
+        x=(GamePanel.CanvasWidth/2)-(tempY/2);
+        y=GamePanel.CanvasHeight-100;
+
+
+        //scale image
+        spritesheet=Bitmap.createScaledBitmap(spritesheet, tempY, tempX, false);
+
+
 
     }
 
